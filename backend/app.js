@@ -1,39 +1,39 @@
-const express = require('express');
+const express = require("express");
+const mongoose = require("mongoose");
+
+const sauceRoutes = require("./routes/sauce");
+const userRoutes = require("./routes/user");
+
 const app = express();
+app.use(express.json());
+
+// console.log(process.env.DB_USERNAME);
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.owfl1.mongodb.net/project6?retryWrites=true`
+  )
+  .then(() => {
+    console.log("Successfully connected to MongoDB Atlas!");
+  })
+  .catch((error) => {
+    console.log("Unable to connect to MongoDB Atlas!");
+    console.error(error);
+  });
 
 app.use((req, res, next) => {
-  console.log('Request received');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
   next();
 });
 
-app.use((req, res, next) => {
-  res.status(201);
-  next();
-});
-
-app.use((req, res, next) => {
-    res.json({message: 'You request was successful'});
-});
+app.use("/api/sauces", sauceRoutes);
+app.use("/api/auth", userRoutes);
 
 module.exports = app;
-
-
-
-// mongoose.connect("mongodb://localhost:27017/testdb");
-// const db = mongoose.connection;
-
-// db.on("error", (err) => {
-//   console.log(err);
-// });
-
-// db.once("open", () => {
-//   console.log("Databse Connection Established");
-// });
-
-// const app = express();
-
-// const PORT = process.env.PORT || 3000;
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
