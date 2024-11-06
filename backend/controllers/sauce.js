@@ -131,3 +131,12 @@ exports.getAllSauces = (req, res, next) => {
       console.log("No sauce found ...", error);
     });
 };
+
+
+//TODO code like handler for sauces 
+// exports.likeSauce;
+// 1. Find sauce based on id from URL Parameter from Route sauce
+// 2. If Like = 1 then implement then like (preventing multiple likes)
+// 3. If like = 0, cancel the vote
+// 4. if like = -1 then Dislike if not already disliked (preventing multiple dislikes)
+// 5. Save to Database 
