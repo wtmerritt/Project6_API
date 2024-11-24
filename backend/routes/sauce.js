@@ -7,7 +7,7 @@ const sauceController = require("../controllers/sauce");
 
 router.get("/", auth, sauceController.getAllSauces);
 router.post("/", auth, multer, sauceController.createSauce);
-// router.post("/:id/like", auth, multer, sauceController.likeSauce);
+router.post("/:id/like", auth, multer, sauceController.likeSauce);
 router.get("/:id", auth, sauceController.getOneSauce);
 router.put("/:id", auth, multer, sauceController.modifySauce);
 router.delete("/:id", auth, sauceController.deleteSauce);

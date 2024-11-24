@@ -2,9 +2,7 @@ const sauce = require("../models/sauce");
 const Sauce = require("../models/sauce");
 const fs = require("fs");
 
-// console.log('Here creating a new sauce ...');
 exports.createSauce = (req, res, next) => {
-  // console.log("Here creating a new sauce ...");
   const url = req.protocol + "://" + req.get("host");
   req.body.sauce = JSON.parse(req.body.sauce);
   const sauce = new Sauce({
@@ -35,7 +33,7 @@ exports.createSauce = (req, res, next) => {
     });
 };
 
-exports.getOneSauce = (req, res, next) => {  
+exports.getOneSauce = (req, res, next) => {
   Sauce.findOne({
     _id: req.params.id,
   })
@@ -50,7 +48,6 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  // console.log("Modifying One Sauce ...");
   let sauce = new Sauce({ _id: req.params._id });
   if (req.file) {
     const url = req.protocol + "://" + req.get("host");
@@ -133,10 +130,87 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 
-//TODO code like handler for sauces 
-// exports.likeSauce;
-// 1. Find sauce based on id from URL Parameter from Route sauce
-// 2. If Like = 1 then implement then like (preventing multiple likes)
-// 3. If like = 0, cancel the vote
-// 4. if like = -1 then Dislike if not already disliked (preventing multiple dislikes)
-// 5. Save to Database 
+exports.likeSauce = (req, res, next) => {
+  Sauce.findOne({
+    _id: req.params.id,
+  })
+    .then((sauce) => {
+      const sauceId = req.params.id;
+      const like = req.body.like;
+      const userId = req.body.userId;
+      let usersLiked = sauce.usersLiked;
+      let usersDisliked = sauce.usersDisliked;
+
+      // Looking to see if user exist in the array
+      function findUser(id) {
+        return id === userId;
+      }
+
+      if (like === 0) {
+        console.log("User is cancelling this response ... " + like);
+
+        if (usersLiked.find(findUser)) {
+          // console.log("Liked Sauce = " + sauce.likes);
+          const newUsersLiked = usersLiked.filter((item) => {
+            return item !== userId;
+          });
+          sauce.usersLiked = newUsersLiked;
+          sauce.likes--;
+          // };
+        } else if (usersDisliked.find(findUser)) {
+          // console.log("Disliked Sauce = " + sauce.dislikes);
+          const newUsersDisliked = usersDisliked.filter((item) => {
+            return item !== userId;
+          });
+          sauce.usersDisliked = newUsersDisliked;
+          sauce.dislikes--;
+        }
+      } else if (like === 1) {
+        console.log("Like the Sauce, UserID is = " + userId);
+        const foundUserId = usersLiked.find(findUser);
+
+        // If user exist don't add userid to array, but increase the likes counter; 
+        // otherwise, add userid to array and implement likes counter
+        if (foundUserId) {
+          // console.log("Userid found = " + foundUserId);
+          sauce.likes++;
+        } else {
+          // console.log("Userid not found  = " + foundUserId);
+          usersLiked.push(userId);          
+          sauce.likes++;
+        }
+      } else if (like === -1) {
+        console.log("DisLiking the sauce ...");
+        const foundUserId = usersLiked.find(findUser);
+
+        // If user exist don't add userid to array, but increase the  dislikes counter; 
+        // otherwise, add userid to array and implement likes counter
+        if (foundUserId) {
+          // console.log("Userid found  = " + foundUserId);
+          sauce.dislikes++;
+        } else {
+          // console.log("Userid not found = " + foundUserId);
+          usersDisliked.push(userId);          
+          sauce.dislikes++;
+        }
+      }
+
+      Sauce.updateOne({ _id: req.params.id }, sauce)
+        .then(() => {
+          res.status(201).json({
+            message: "Sauce updated successfully!",
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            error: error,
+          });
+        });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+      console.log("No Like made ...", error);
+    });
+};

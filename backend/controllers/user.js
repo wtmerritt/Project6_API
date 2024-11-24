@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { Error } = require("mongoose");
 require("dotenv").config();
-// console.log(process.env.SECRET_TOKEN);
 
 exports.signup = (req, res, next) => {
   bcrypt.hash(req.body.password, 10).then((hash) => {
@@ -41,10 +40,7 @@ exports.login = (req, res, next) => {
             return res.status(401).json({
               error: new Error("Incorrect password"),
             });
-          }
-          // const token = jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
-          //   expiresIn: "24h",
-          // });
+          }          
           const token = jwt.sign(
             { userId: user._id },
             process.env.SECRET_TOKEN,
