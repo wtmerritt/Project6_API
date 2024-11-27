@@ -96,7 +96,6 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.deleteSauce = (req, res, next) => {
-  // console.log("Trying to Delete One Sauces ...");
   Sauce.findOne({ _id: req.params.id }).then((sauce) => {
     const filename = sauce.imageUrl.split("/images/")[1];
     fs.unlink("images/" + filename, () => {
@@ -116,7 +115,6 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.getAllSauces = (req, res, next) => {
-  // console.log("Trying to get all All Saurces ...");
   Sauce.find()
     .then((sauce) => {
       res.status(200).json(sauce);
@@ -128,7 +126,6 @@ exports.getAllSauces = (req, res, next) => {
       console.log("No sauce found ...", error);
     });
 };
-
 
 exports.likeSauce = (req, res, next) => {
   Sauce.findOne({
@@ -147,18 +144,13 @@ exports.likeSauce = (req, res, next) => {
       }
 
       if (like === 0) {
-        console.log("User is cancelling this response ... " + like);
-
         if (usersLiked.find(findUser)) {
-          // console.log("Liked Sauce = " + sauce.likes);
           const newUsersLiked = usersLiked.filter((item) => {
             return item !== userId;
           });
           sauce.usersLiked = newUsersLiked;
           sauce.likes--;
-          // };
         } else if (usersDisliked.find(findUser)) {
-          // console.log("Disliked Sauce = " + sauce.dislikes);
           const newUsersDisliked = usersDisliked.filter((item) => {
             return item !== userId;
           });
@@ -166,31 +158,19 @@ exports.likeSauce = (req, res, next) => {
           sauce.dislikes--;
         }
       } else if (like === 1) {
-        console.log("Like the Sauce, UserID is = " + userId);
         const foundUserId = usersLiked.find(findUser);
 
-        // If user exist don't add userid to array, but increase the likes counter; 
-        // otherwise, add userid to array and implement likes counter
-        if (foundUserId) {
-          // console.log("Userid found = " + foundUserId);
-          sauce.likes++;
-        } else {
-          // console.log("Userid not found  = " + foundUserId);
-          usersLiked.push(userId);          
+        // If user exist don't add userid to array and increase the likes counter;        
+        if (!foundUserId) {          
+          usersLiked.push(userId);
           sauce.likes++;
         }
       } else if (like === -1) {
-        console.log("DisLiking the sauce ...");
         const foundUserId = usersLiked.find(findUser);
 
-        // If user exist don't add userid to array, but increase the  dislikes counter; 
-        // otherwise, add userid to array and implement likes counter
-        if (foundUserId) {
-          // console.log("Userid found  = " + foundUserId);
-          sauce.dislikes++;
-        } else {
-          // console.log("Userid not found = " + foundUserId);
-          usersDisliked.push(userId);          
+        // If user exist don't add userid to array and increase the dislikes counter;
+        if (!foundUserId) {          
+          usersDisliked.push(userId);
           sauce.dislikes++;
         }
       }
@@ -198,7 +178,7 @@ exports.likeSauce = (req, res, next) => {
       Sauce.updateOne({ _id: req.params.id }, sauce)
         .then(() => {
           res.status(201).json({
-            message: "Sauce updated successfully!",
+            message: "Sauce successfully!",
           });
         })
         .catch((error) => {

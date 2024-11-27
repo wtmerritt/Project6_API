@@ -1,7 +1,7 @@
 const express = require("express");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const path = require('path');
+const path = require("path");
 
 const sauceRoutes = require("./routes/sauce");
 const userRoutes = require("./routes/user");
@@ -9,7 +9,6 @@ const userRoutes = require("./routes/user");
 const app = express();
 app.use(express.json());
 
-// console.log(process.env.DB_USERNAME);
 mongoose
   .connect(
     `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.owfl1.mongodb.net/project6?retryWrites=true`
@@ -36,7 +35,7 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use("/api/sauces", sauceRoutes);
 app.use("/api/auth", userRoutes);
